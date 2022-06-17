@@ -1,0 +1,82 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{comment}
+% \setlength{\parskip}{3em}
+
+\begin{document}
+
+\begin{figure}[h]
+\includegraphics[width=12cm]{./buck.png}
+\end{figure}
+
+\newpage
+
+on phase:
+
+\begin{figure}[h]
+\includegraphics[width=12cm]{./buck1a.png}
+\end{figure}
+
+\begin{equation} \label{one}
+\begin{split}
+V_{in} & = V_L + V_o \\
+V_{in} & = L\frac{dI_L}{dt} + V_o \\
+where V_o & = V_c = V_r
+\end{split}
+\end{equation}
+
+\begin{equation} \label{two}
+\begin{split}
+I_L = I_c + I_r \\
+I_L = C \frac{dV_o}{dt} + \frac{V_o}{R} \\
+\end{split}
+\end{equation}
+
+\filbreak
+subst \ref{two} in \ref{one}
+
+\begin{equation} \label{three}
+\begin{split}
+V_{in} & = L \frac{d}{dt} ( C \frac{dV_o}{dt} + \frac{V_o}{R} ) + V_o \\
+V_{in} & =  L C \frac{d^2 V_o}{dt^2} + \frac{L}{R} \frac{d V_o}{dt} + V_o \\
+\end{split}
+\end{equation}
+
+
+\newpage
+
+off phase
+
+\begin{figure}[h]
+\includegraphics[width=12cm]{./buck1b.png}
+\end{figure}
+
+\begin{equation} \label{one_off}
+\begin{split}
+V_L = V_o \\
+L\frac{di_L}{dt} = V_o \\
+\end{split}
+\end{equation}
+
+\begin{equation} \label{two_off}
+\begin{split}
+I_L = I_c + I_r \\
+I_L = C \frac{dV_o}{dt} + \frac{V_o}{R} \\
+\end{split}
+\end{equation}
+
+\filbreak
+subst \ref{two_off} in \ref{one_off}
+
+\begin{equation}
+\begin{split}
+L\frac{d}{dt} (	C \frac{dV_o}{dt} + \frac{V_o}{R} ) = V_o \\
+L C \frac{d^2 V_o}{dt^2} + \frac{L}{R} \frac{d V_o}{dt} = V_o \\
+L C \frac{d^2 V_o}{dt^2} + \frac{L}{R} \frac{d V_o}{dt} - V_o = 0 \\
+\end{split}
+\end{equation}
+
+
+
+\end{document}
