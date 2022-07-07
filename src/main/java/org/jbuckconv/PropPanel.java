@@ -6,6 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.Format;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
@@ -28,6 +30,7 @@ public class PropPanel extends JPanel implements ActionListener {
 	Logger logger = LogManager.getLogger(PropPanel.class);
 
 	JTextField tfstep;
+	JFormattedTextField tfn;
 	JFormattedTextField tffreq;
 	JFormattedTextField tfdutycycle;
 	JFormattedTextField tfvin;
@@ -50,43 +53,48 @@ public class PropPanel extends JPanel implements ActionListener {
 
 	private void creategui() {
 
-		NumberFormat format = NumberFormat.getInstance();
-		format.setGroupingUsed(false);
+				
 		JLabel l1 = new JLabel("time step");
 		l1.setToolTipText("integration time step");
 		add(l1);
 		tfstep = new JTextField(20);
 		add(tfstep);
 
+		add(new JLabel("number of steps"));
+		Format format = new DecimalFormat("####"); 
+		tfn = new JFormattedTextField(format);
+		add(tfn);
+
+		
 		add(new JLabel("pwm freq"));
-		format.setMinimumFractionDigits(1);
+		format = new DecimalFormat("########.#"); 		
 		tffreq = new JFormattedTextField(format);
 		add(tffreq);
 
 		add(new JLabel("duty cycle"));
-		format.setMinimumFractionDigits(1);
+		format = new DecimalFormat("###.##");
 		tfdutycycle = new JFormattedTextField(format);
 		add(tfdutycycle);
 
 		add(new JLabel("Vin"));
-		format.setMinimumFractionDigits(2);
+		format = new DecimalFormat("#####.##");
 		tfvin = new JFormattedTextField(format);
 		add(tfvin);
 
 		add(new JLabel("L uH"));
-		format.setMinimumFractionDigits(1);
+		format = new DecimalFormat("#####.#");
 		tfL = new JFormattedTextField(format);
 		add(tfL);
 
 		add(new JLabel("C uF"));
-		format.setMinimumFractionDigits(1);
+		format = new DecimalFormat("#####.#");
 		tfC = new JFormattedTextField(format);
 		add(tfC);
 
-		JLabel l2 = new JLabel("R");
-		l2.setToolTipText("this is the load");
-		add(l2);
-		format.setMinimumFractionDigits(1);
+		JLabel l3 = new JLabel("R");
+		l3.setToolTipText("this is the load");
+		add(l3);
+		format = new DecimalFormat("#####.#");
 		tfR = new JFormattedTextField(format);
 		add(tfR);
 		
@@ -105,10 +113,11 @@ public class PropPanel extends JPanel implements ActionListener {
 
 	private void updatevals() {
 		tfstep.setText(Double.toString(compute.getStep()));
+		tfn.setValue(compute.getN());
 
 		tffreq.setValue(ode.getFreq());
 		tfdutycycle.setValue(ode.getDuty_cycle() * 100.0);
-		tfvin.setValue(ode.getVin());
+		tfvin.setValue(ode.getVinc());
 		tfL.setValue(ode.getL() * 1e6);
 		tfC.setValue(ode.getC() * 1e6);
 		tfR.setValue(ode.getR());
@@ -118,7 +127,8 @@ public class PropPanel extends JPanel implements ActionListener {
 	private void doupdate() {
 		String efield = "";
 		try {
-			tffreq.commitEdit();
+			tfn.commitEdit();
+			tffreq.commitEdit();			
 			tfdutycycle.commitEdit();
 			tfvin.commitEdit();
 			tfL.commitEdit();
@@ -127,12 +137,14 @@ public class PropPanel extends JPanel implements ActionListener {
 			
 			efield = "step";
 			compute.setStep(Double.parseDouble(tfstep.getText()));
+			efield = "N";
+			compute.setN(((Number)tfn.getValue()).intValue());
 			efield = "freq";
 			ode.setFreq(((Number)tffreq.getValue()).doubleValue());
 			efield = "duty cycle";
 			ode.setDuty_cycle(((Number)tfdutycycle.getValue()).doubleValue() / 100.0);
 			efield = "vin";
-			ode.setVin(((Number)tfvin.getValue()).doubleValue());
+			ode.setVinc(((Number)tfvin.getValue()).doubleValue());
 			efield = "L";
 			ode.setL(((Number)tfL.getValue()).doubleValue() * 1e-6);
 			efield = "C";
