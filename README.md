@@ -24,7 +24,7 @@ If you want to run it independently, in the target folder,
 preserve the generated jar file and its libs subdirectory jar files and structure.
 This set is needed to run without errors. e.g.
 ```
-jbuckconv-0.1.0.jar
+jbuckconv-0.2.0.jar
 libs/commons-math3-3.6.1.jar
 libs/jfreechart-1.5.3.jar
 libs/log4j-api-2.17.2.jar
@@ -35,7 +35,7 @@ libs/log4j-core-2.17.2.jar
 
 In the target folder run the generated  jbuckconv-*.jar, e.g.
 ```
-java -jar jbuckconv-0.1.0.jar
+java -jar jbuckconv-0.2.0.jar
 ```
 You might be able to simply double click the jar file to run it. 
 
@@ -51,7 +51,7 @@ The ODE derivations is in the doc folder [buck_eqn.pdf](doc/buck_eqn.pdf). One s
 
 In addition, timesteps matter.  The integration timesteps should be at least 10x smaller (or much smaller) than the buck converter PWM period. If the integration timesteps is too large, there can be large oscillations that produce incorrect results.
 
-If you use the 'debug' features, selectable on the menu. It prints the values while the computing them, it is very verbose, so it is turned off default. Those messages goes on the console. So if there is no console (command prompt) window, you would likely need to run it on the command line using that java -jar jbuckconv-0.1.0.jar command above.
+If you use the 'debug' features, selectable on the menu. It prints the values while the computing them, it is very verbose, so it is turned off default. Those messages goes on the console. So if there is no console (command prompt) window, you would likely need to run it on the command line using that java -jar jbuckconv-0.2.0.jar command above.
 
 ## Attributions
 

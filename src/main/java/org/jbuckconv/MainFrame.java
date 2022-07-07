@@ -14,6 +14,8 @@ import java.net.URL;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -23,6 +25,8 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToolBar;
 
 import org.apache.logging.log4j.Level;
@@ -50,6 +54,7 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 	PropPanel proppanel;
 	BuckODE ode;
 	Compute compute;
+	ButtonGroup gPlot;
 
 	public MainFrame() {
 		super();
@@ -66,13 +71,28 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 		JMenuBar menubar = new JMenuBar();
 		JMenu mFile = new JMenu("File");
 		mFile.add(addmenuitem("Snapshot", "SNAP", KeyEvent.VK_N));
+		mFile.add(addmenuitem("About", "ABOUT", KeyEvent.VK_A));
 		mFile.add(addmenuitem("Close", "CLOSE", KeyEvent.VK_C));
 		menubar.add(mFile);
 		
 		JMenu mCompute = new JMenu("Compute");
 		mCompute.add(addmenuitem("Compute", "CALC", KeyEvent.VK_C));
 		mCompute.add(addmenuitem("Next", "NCAL", KeyEvent.VK_N));
-		menubar.add(mCompute);		
+		menubar.add(mCompute);
+		
+		JMenu mPlot = new JMenu("Plot");
+		gPlot = new ButtonGroup();
+		JRadioButtonMenuItem mrbVout = new JRadioButtonMenuItem("Vout", true);
+		mrbVout.setMnemonic(KeyEvent.VK_V);
+		mrbVout.setActionCommand("VOUT");
+		gPlot.add(mrbVout);
+		mPlot.add(mrbVout);
+		JRadioButtonMenuItem mrbComb = new JRadioButtonMenuItem("Components");
+		mrbComb.setMnemonic(KeyEvent.VK_C);
+		mrbComb.setActionCommand("COMB");
+		gPlot.add(mrbComb);
+		mPlot.add(mrbComb);
+		menubar.add(mPlot);		
 
 		final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         final Configuration config = ctx.getConfiguration();
@@ -189,20 +209,28 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 
 	
 	private void docompute() {
+		int n = compute.getN();
 		compute = new Compute(ode);
+		compute.setN(n);
 		if(proppanel.getStep() != 0.0)
 			compute.setStep(proppanel.getStep());		
 		compute.docompute();
-		chart = compute.getChart();
+		if (gPlot.getSelection().getActionCommand().equals("COMB"))			
+			chart = compute.getCombinedChart();
+		else
+			chart = compute.getChart();			
 		chartpanel.setChart(chart);
 		proppanel.setCompute(compute);
 		
 	}
 	
-	private void docompnext() {
+	private void docompnext() {	
 		if(compute == null) return;
 		compute.docompute();
-		chart = compute.getChart();
+		if (gPlot.getSelection().getActionCommand().equals("COMB"))			
+			chart = compute.getCombinedChart();
+		else
+			chart = compute.getChart();			
 		chartpanel.setChart(chart);			
 	}
 
@@ -216,10 +244,16 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 			docompnext();
 		} else if (cmd.equals("SNAP")) {
 			dosnapshot();
+		} else if (cmd.equals("ABOUT")) {
+			About a =  new About();
+			a.setLocationRelativeTo(this);
+			a.pack();
+			a.setVisible(true);
 		} else if (cmd.equals("CLOSE")) {
 			dispose();
 		}		
 	}
+
 
 	@Override
 	public void itemStateChanged(ItemEvent e) {
