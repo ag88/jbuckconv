@@ -124,7 +124,7 @@ public class PropPanel extends JPanel implements ActionListener {
 
 	}
 
-	private void doupdate() {
+	public void doupdate() {
 		String efield = "";
 		try {
 			tfn.commitEdit();

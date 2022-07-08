@@ -63,8 +63,8 @@ public class Compute {
 
 	public Compute() {
 		init();
-		
 		ode = new BuckODE();
+		//ode = new BuckODEdiode();
 		conv = new FirstOrderConverter(ode);
 		integ = new ClassicalRungeKuttaIntegrator(step);
 	}
@@ -133,7 +133,7 @@ public class Compute {
 		XYSeries series1 = new XYSeries("I_L");                 
 
 		for(int i=0; i<count; i++) {
-			double il = ode.getC() * dotVout[i] + Vout[i] / ode.getR(); 
+			double il = ode.calcIL(dotVout[i], Vout[i]);
         	series1.add(T[i] , il);
         }
         dataset.addSeries(series1);
@@ -158,8 +158,10 @@ public class Compute {
 		XYSeriesCollection dataset = new XYSeriesCollection();
 		XYSeries series1 = new XYSeries("Vin");                 
 
+		Vin ovin = ode.getoVin();
+		
 		for(int i=0; i<count; i++) {        
-        	series1.add(T[i] , ode.Vin(T[i]));
+        	series1.add(T[i] , ovin.getVin(T[i]));
         }
         dataset.addSeries(series1);
 

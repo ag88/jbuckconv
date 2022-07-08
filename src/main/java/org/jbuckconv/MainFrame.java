@@ -36,6 +36,7 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.jbuckconv.model.BuckODE;
+import org.jbuckconv.model.BuckODEdiode;
 import org.jbuckconv.model.Compute;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -55,6 +56,7 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 	BuckODE ode;
 	Compute compute;
 	ButtonGroup gPlot;
+	ButtonGroup gModel;
 
 	public MainFrame() {
 		super();
@@ -78,6 +80,20 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 		JMenu mCompute = new JMenu("Compute");
 		mCompute.add(addmenuitem("Compute", "CALC", KeyEvent.VK_C));
 		mCompute.add(addmenuitem("Next", "NCAL", KeyEvent.VK_N));
+		mCompute.addSeparator();
+		gModel = new ButtonGroup();
+		JRadioButtonMenuItem mrbBasic = new JRadioButtonMenuItem("BuckODE - no diode", true);
+		mrbBasic.setMnemonic(KeyEvent.VK_N);
+		mrbBasic.setActionCommand("MBAS");
+		mrbBasic.addActionListener(this);
+		gModel.add(mrbBasic);
+		mCompute.add(mrbBasic);
+		JRadioButtonMenuItem mrbDiode = new JRadioButtonMenuItem("BuckODE - with diode", false);
+		mrbDiode.setMnemonic(KeyEvent.VK_D);
+		mrbDiode.setActionCommand("MDIOD");
+		mrbDiode.addActionListener(this);
+		gModel.add(mrbDiode);
+		mCompute.add(mrbDiode);		
 		menubar.add(mCompute);
 		
 		JMenu mPlot = new JMenu("Plot");
@@ -234,6 +250,13 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 		chartpanel.setChart(chart);			
 	}
 
+	private void changeode(BuckODE newode) {
+		//BuckODE oldode = this.ode;
+		this.ode = newode;
+		proppanel.setOde(this.ode);
+		proppanel.doupdate();		
+	}
+
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -244,6 +267,16 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 			docompnext();
 		} else if (cmd.equals("SNAP")) {
 			dosnapshot();
+		} else if (cmd.equals("MBAS")) {			
+			if (!(ode instanceof BuckODEdiode)) return;
+			logger.debug("ODE without diode selected");
+			BuckODE newode = new BuckODE();
+			changeode(newode);
+		} else if (cmd.equals("MDIOD")) {			
+			if (ode instanceof BuckODEdiode) return;
+			logger.debug("ODE with diode selected");
+			BuckODE newode = new BuckODEdiode();
+			changeode(newode);
 		} else if (cmd.equals("ABOUT")) {
 			About a =  new About();
 			a.setLocationRelativeTo(this);
@@ -253,6 +286,7 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 			dispose();
 		}		
 	}
+
 
 
 	@Override
