@@ -35,6 +35,8 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.TextTitle;
+import org.jfree.chart.title.Title;
 import org.jfree.chart.ui.RectangleEdge;
 import org.jfree.chart.ui.RectangleInsets;
 import org.jfree.data.Range;
@@ -43,41 +45,34 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 public class Compute {
-
-	Logger logger = LogManager.getLogger(Compute.class);
 	
 	final int MAXN = 2000;	
 	public double T[];
 	public double Vout[];
 	public double dotVout[];	
 	
-	int N=1000;
-	int count = 0;
-	double step = 1e-5;
-	double stop;
-	double t, t0;
+	public int N=1000;
+	public int count = 0;
+	public double step = 1e-5;
+	public double stop;
+	public double t, t0;
 		
-	BuckODE ode;
-	FirstOrderConverter conv;
-	ClassicalRungeKuttaIntegrator integ;
+	public BuckODE ode;
 
 	public Compute() {
 		init();
 		ode = new BuckODE();
 		//ode = new BuckODEdiode();
-		conv = new FirstOrderConverter(ode);
-		integ = new ClassicalRungeKuttaIntegrator(step);
+		//ode = new BuckODEdiode2();
 	}
 	
 	public Compute(BuckODE ode) {
 		init();
 		
 		this.ode = ode;
-		conv = new FirstOrderConverter(this.ode);
-		integ = new ClassicalRungeKuttaIntegrator(step);
 	}
 	
-	private void init() {
+	protected void init() {
 		T = new double[MAXN];
 		Vout = new double[MAXN];
 		dotVout = new double[MAXN];
@@ -89,32 +84,7 @@ public class Compute {
 		return ode;
 	}
 	
-	public void docompute() {
-		Marker marker = MarkerManager.getMarker("docompute");
-		double t0=t;
-		double[] y0 = new double[2];
-		if (count > 0)
-			y0[0] = Vout[count-1];
-		else
-			y0[0] = 0.0;
-		logger.debug(marker, "N: {}", N);
-		stop = t + step * N;
-		count = 0;
-		while(t<stop) {
-			t = t + step;			
-			double[] y1 = integ.singleStep(conv, t0, y0, t);			
-			T[count] = t;
-			Vout[count] = y1[0];
-			dotVout[count] = ode.getYdot();
-			
-			NumberFormat f = NumberFormat.getInstance();
-			f.setMaximumFractionDigits(5);
-			logger.debug(marker, "t: {}, v: {}", f.format(t0), f.format(y1[0]));
-			t0 = t;
-			y0[0] = y1[0];
-			count++;			
-		}				
-	}
+	public void docompute() {};
 	
 	public XYSeriesCollection getVoutDataset() {
 		XYSeriesCollection dataset = new XYSeriesCollection();
@@ -170,7 +140,7 @@ public class Compute {
 	
 	public JFreeChart getChart() {
 
-		String title = "buck converter";
+		String title = "buck converter " + ode.getClass().getSimpleName();
 		String xlabel = "t";
 		String ylabel = "v";
 		
@@ -185,6 +155,9 @@ public class Compute {
         		true,			// legend 
         		true,   		// tooltips
         		false); 		// urls
+
+        TextTitle subt = new TextTitle("solver: ".concat(this.getClass().getSimpleName()));
+        chart.addSubtitle(subt);
         
         XYPlot plot = (XYPlot) chart.getPlot();
         plot.setBackgroundPaint(Color.lightGray);
@@ -256,9 +229,13 @@ public class Compute {
         plot.setOrientation(PlotOrientation.VERTICAL);
 
         // return a new chart containing the overlaid plot...
-        return new JFreeChart("components",
+        JFreeChart chart = new JFreeChart("components " + ode.getClass().getSimpleName(),
                               JFreeChart.DEFAULT_TITLE_FONT, plot, true);
 
+        TextTitle subt = new TextTitle("solver: ".concat(this.getClass().getSimpleName()));
+        chart.addSubtitle(subt);
+        
+        return chart;
     }
 
 	public double[] getT() {
@@ -283,7 +260,6 @@ public class Compute {
 
 	public void setStep(double step) {
 		this.step = step;
-		integ = new ClassicalRungeKuttaIntegrator(step);
 	}
 
 	public int getN() {

@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.MarkerManager;
 import org.jbuckconv.model.BuckODE;
 import org.jbuckconv.model.Compute;
+import org.jbuckconv.model.ComputeRKN;
 
 public class PropPanel extends JPanel implements ActionListener {
 
@@ -72,7 +73,7 @@ public class PropPanel extends JPanel implements ActionListener {
 		add(tffreq);
 
 		add(new JLabel("duty cycle"));
-		format = new DecimalFormat("###.##");
+		format = new DecimalFormat("###.####");
 		tfdutycycle = new JFormattedTextField(format);
 		add(tfdutycycle);
 

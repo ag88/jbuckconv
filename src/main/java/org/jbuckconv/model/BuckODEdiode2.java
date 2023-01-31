@@ -1,21 +1,27 @@
 package org.jbuckconv.model;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jbuckconv.model.BuckODE.State;
 
-public class BuckODEdiode extends BuckODE {
+public class BuckODEdiode2 extends BuckODE {
 
 	Diode diode;
 	
-	public BuckODEdiode() {
+	double Il;
+	
+	public BuckODEdiode2() {
 		super();
+		logger = LogManager.getLogger(BuckODEdiode2.class);
+		
 		diode = new Diode();
+		Il = 0;
 	}
 
 	@Override
 	public void computeSecondDerivatives(double t, double[] y, double[] yDot, double[] yDDot) {
-		Marker marker = MarkerManager.getMarker("compute 2nd deriv");
+		Marker marker = MarkerManager.getMarker("2nd deriv");
 		logger.debug(marker, "t : {}, y: {}, yDot: {}", t, y[0], yDot[0]);
 		double vin = oVin.getVin(t);
 				
@@ -23,6 +29,10 @@ public class BuckODEdiode extends BuckODE {
 			if (m_state == State.High) {
 				//yDot[0] = -1.0 * yDot[0]; 
 				//yDot[0] = 0.0;
+				if (Math.abs(Il) > 1e-4) {
+					yDot[0] = (  Il - y[0] / R ) / C;
+					logger.debug(marker, "yDot: {}", yDot[0]);
+				}				
 				m_state = State.Low;
 				logger.debug(marker, "state: {}", m_state.name());
 			}
@@ -31,10 +41,10 @@ public class BuckODEdiode extends BuckODE {
 			// with diode
 			double id = C * yDot[0] + y[0] / R;
 			logger.debug(marker, "Id: {}", id);
-			if (id <= 0.0) {
-				yDDot[0] = 0.0;
-			}  else
-				yDDot[0] = 1.0 / (L * C) * (- y[0] + L/R * yDot[0] + diode.Vd(id));
+			//if (id <= 0.0) {
+			//	yDDot[0] = 0.0;
+			//}  else
+				yDDot[0] = 1.0 / (L * C) * (y[0] + diode.Vd(id) - L/R * yDot[0]);
 			// inverted v for L
 			//yDDot[0] = 1.0 / (L * C) * (y[0] - L/R * yDot[0] + diode.Vd( C * yDot[0] - y[0] / R));
 			// inverted without diode
@@ -51,8 +61,9 @@ public class BuckODEdiode extends BuckODE {
 			//yDDot[0] = 1.0 / (L * C) * (  y[0] - vin - L/R * yDot[0] );
 		}
 		ydot = yDot[0];
-
-		logger.debug(marker, "yDDot: {}", yDDot[0]);
+		Il = C * yDot[0] + y[0] / R;
+		
+		logger.debug(marker, "yDDot: {}, Il {}", yDDot[0], Il);
 
 	}
 		

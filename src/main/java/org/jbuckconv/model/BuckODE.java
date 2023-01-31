@@ -12,21 +12,21 @@ import org.apache.logging.log4j.MarkerManager;
 
 public class BuckODE implements SecondOrderDifferentialEquations {
 	
-	Logger logger = LogManager.getLogger(BuckODE.class);
+	protected Logger logger = LogManager.getLogger(BuckODE.class);
 	
-	double L;
-	double C;
-	double R;
-	double ydot;
+	public double L;
+	public double C;
+	public double R;
+	public double ydot;
 	
-	Vin oVin;
+	public Vin oVin;
 	
-	enum State {
+	public enum State {
 		Low,
 		High
 	}
 	
-	State m_state;
+	public State m_state;
 			
 	public BuckODE() {
 		oVin = new Vin();
@@ -44,15 +44,17 @@ public class BuckODE implements SecondOrderDifferentialEquations {
 	
 	@Override
 	public void computeSecondDerivatives(double t, double[] y, double[] yDot, double[] yDDot) {
-		Marker marker = MarkerManager.getMarker("compute 2nd deriv");
+		Marker marker = MarkerManager.getMarker("2nd deriv");
 		logger.debug(marker, "t : {}, y: {}, yDot: {}", t, y[0], yDot[0]);
 		double vin = oVin.getVin(t);
 
 		yDDot[0] = 1.0 / (L * C) * (vin - y[0] - L/R * yDot[0] );
 		
 		ydot = yDot[0];
+		
+		double Il = C * yDot[0] + y[0] / R;
 
-		logger.debug(marker, "yDDot: {}", yDDot[0]);
+		logger.debug(marker, "yDDot: {}, Il: {}", yDDot[0], Il);
 	}
 	
 	public double calcIL(double dotVout, double Vout) {

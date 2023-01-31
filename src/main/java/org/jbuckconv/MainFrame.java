@@ -37,7 +37,10 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.jbuckconv.model.BuckODE;
 import org.jbuckconv.model.BuckODEdiode;
+import org.jbuckconv.model.BuckODEdiode2;
 import org.jbuckconv.model.Compute;
+import org.jbuckconv.model.ComputeCommMath;
+import org.jbuckconv.model.ComputeRKN;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtils;
@@ -57,12 +60,13 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 	Compute compute;
 	ButtonGroup gPlot;
 	ButtonGroup gModel;
+	ButtonGroup gCompute;
 
 	public MainFrame() {
 		super();
 		setTitle("buck converter simulator");
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		compute = new Compute();
+		compute = new ComputeCommMath();
 		ode = compute.getODE();
 		createGui();
 	}
@@ -93,7 +97,30 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 		mrbDiode.setActionCommand("MDIOD");
 		mrbDiode.addActionListener(this);
 		gModel.add(mrbDiode);
-		mCompute.add(mrbDiode);		
+		mCompute.add(mrbDiode);
+		JRadioButtonMenuItem mrbDiode2 = new JRadioButtonMenuItem("BuckODE - with diode 2", false);
+		mrbDiode2.setMnemonic(KeyEvent.VK_D);
+		mrbDiode2.setActionCommand("MDIO2");
+		mrbDiode2.addActionListener(this);
+		gModel.add(mrbDiode2);
+		mCompute.add(mrbDiode2);
+
+		
+		mCompute.addSeparator();
+		gCompute = new ButtonGroup();
+		JRadioButtonMenuItem mrbCommons = new JRadioButtonMenuItem("Compute commons math", true);
+		mrbCommons.setMnemonic(KeyEvent.VK_C);
+		mrbCommons.setActionCommand("MCCOM");
+		mrbCommons.addActionListener(this);
+		gCompute.add(mrbCommons);
+		mCompute.add(mrbCommons);
+		JRadioButtonMenuItem mrbRKN = new JRadioButtonMenuItem("Compute RKN", false);
+		mrbRKN.setMnemonic(KeyEvent.VK_K);
+		mrbRKN.setActionCommand("MCRKN");
+		mrbRKN.addActionListener(this);
+		gCompute.add(mrbRKN);
+		mCompute.add(mrbRKN);		
+		
 		menubar.add(mCompute);
 		
 		JMenu mPlot = new JMenu("Plot");
@@ -226,7 +253,12 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 	
 	private void docompute() {
 		int n = compute.getN();
-		compute = new Compute(ode);
+		
+		if(gCompute.getSelection().getActionCommand().equals("MCCOM")) {
+			compute = new ComputeCommMath(ode);
+		} else if(gCompute.getSelection().getActionCommand().equals("MCRKN")) {
+			compute = new ComputeRKN(ode);
+		}
 		compute.setN(n);
 		if(proppanel.getStep() != 0.0)
 			compute.setStep(proppanel.getStep());		
@@ -268,15 +300,17 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 		} else if (cmd.equals("SNAP")) {
 			dosnapshot();
 		} else if (cmd.equals("MBAS")) {			
-			if (!(ode instanceof BuckODEdiode)) return;
 			logger.debug("ODE without diode selected");
 			BuckODE newode = new BuckODE();
 			changeode(newode);
-		} else if (cmd.equals("MDIOD")) {			
-			if (ode instanceof BuckODEdiode) return;
+		} else if (cmd.equals("MDIOD")) {
 			logger.debug("ODE with diode selected");
 			BuckODE newode = new BuckODEdiode();
 			changeode(newode);
+		} else if (cmd.equals("MDIO2")) {
+			logger.debug("ODE with diode 2 selected");
+			BuckODE newode = new BuckODEdiode2();
+			changeode(newode);			
 		} else if (cmd.equals("ABOUT")) {
 			About a =  new About();
 			a.setLocationRelativeTo(this);
@@ -293,7 +327,12 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 	public void itemStateChanged(ItemEvent e) {
 		JCheckBoxMenuItem m = (JCheckBoxMenuItem) e.getSource();
 		Level level = m.isSelected() ? Level.DEBUG : Level.INFO;
-		updatelogger("org.jbuckconv.model." + m.getText(), level);		
+		if (m.getText().equals("Compute")) {
+			updatelogger("org.jbuckconv.model." + m.getText(), level);
+		} else if (m.getText().equals("BuckODE")) {
+			updatelogger("org.jbuckconv.model.BuckODE", level);
+			updatelogger("org.jbuckconv.model.BuckODEdiode2", level);
+		}
 		
 	}
 
