@@ -9,10 +9,15 @@ public class BuckODEdiode extends BuckODE {
 
 	Diode diode;
 	
+	double Id;
+	double Vd;
+	
 	public BuckODEdiode() {
 		super();
 		logger = LogManager.getLogger(BuckODEdiode.class);
 		diode = new Diode();
+		Id = 0;
+		Vd = 0;
 	}
 
 	@Override
@@ -31,12 +36,18 @@ public class BuckODEdiode extends BuckODE {
 			// without diode
 			//yDDot[0] = 1.0 / (L * C) * (- y[0] + L/R * yDot[0] );
 			// with diode
-			double id = C * yDot[0] + y[0] / R;
-			logger.debug(marker, "Id: {}", id);
-			if (id <= 0.0) {
+			Id = C * yDot[0] + y[0] / R;
+			Vd = 0.0;
+			try {
+				Vd = diode.Vd(Id);
+			} catch (DiodeCurrException e) {
+				Vd = y[0] - L/R * yDot[0];
+			}
+			logger.debug(marker, "Id: {}, Vd: {}", Id, Vd);
+			if (Id <= 0.0) {
 				yDDot[0] = 0.0;
-			}  else
-				yDDot[0] = 1.0 / (L * C) * (- y[0] + L/R * yDot[0] + diode.Vd(id));
+			}  else 
+				yDDot[0] = 1.0 / (L * C) * (- y[0] + L/R * yDot[0] + Vd);
 			// inverted v for L
 			//yDDot[0] = 1.0 / (L * C) * (y[0] - L/R * yDot[0] + diode.Vd( C * yDot[0] - y[0] / R));
 			// inverted without diode
@@ -48,6 +59,8 @@ public class BuckODEdiode extends BuckODE {
 				m_state = State.High;
 				logger.debug(marker, "state: {}", m_state.name());
 			}
+			Id = 0;
+			Vd = 0;
 			yDDot[0] = 1.0 / (L * C) * (  vin - y[0] - L/R * yDot[0] );
 			// using V_L = - L dI/dt
 			//yDDot[0] = 1.0 / (L * C) * (  y[0] - vin - L/R * yDot[0] );
@@ -64,4 +77,21 @@ public class BuckODEdiode extends BuckODE {
 		return il < 0.0 ? 0.0 : il;
 	}
 
+	public double getId() {
+		return Id;
+	}
+
+	public void setId(double id) {
+		Id = id;
+	}
+
+	public double getVd() {
+		return Vd;
+	}
+
+	public void setVd(double vd) {
+		Vd = vd;
+	}
+
+	
 }

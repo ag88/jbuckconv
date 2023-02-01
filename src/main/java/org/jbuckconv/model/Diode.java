@@ -9,11 +9,17 @@ public class Diode {
 
 	Logger logger = LogManager.getLogger(Diode.class);
 	
-	// 1N5822
+
 	
 	double VTemp;
-	final double Nn = 1.0281; // ideality factor
-	final double Is = 2.5069e-6; // reverse bias sat current
+	
+	// 1N5822	
+	//final double Nn = 1.0281; // ideality factor
+	//final double Is = 2.5069e-6; // reverse bias sat current
+	
+	// 1N4001
+	final double Nn = 1.83369; // ideality factor
+	final double Is = 1.22478e-08; // reverse bias sat current
 
 	public Diode() {
 		VTemp = VT(300); //VTemp at 300 K ~ 25mv
@@ -31,14 +37,13 @@ public class Diode {
 		return I;
 	}
 	
-	public double Vd(double Id) {
+	public double Vd(double Id) throws DiodeCurrException {
 		double Vd;
 		Marker marker = MarkerManager.getMarker("Vd");
 		
-		if (Id < 0.0)
-			Vd = 0.0;
-		else 
-			Vd= Nn * VTemp * Math.log(Id / Is + 1.0);
+		if (Id/Is <= 1.0) throw new DiodeCurrException();
+
+		Vd= Nn * VTemp * Math.log(Id / Is + 1.0);
 		logger.debug(marker, "Vd : {}", Vd);
 		return Vd;
 	}

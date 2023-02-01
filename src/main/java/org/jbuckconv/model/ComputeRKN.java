@@ -84,7 +84,14 @@ public class ComputeRKN extends Compute {
 			T[count] = t;
 			Vout[count] = result.y;
 			dotVout[count] = result.ydot;
-			
+			if(ode instanceof BuckODEdiode) {
+				Id[count] = ((BuckODEdiode) ode).getId();
+				Vd[count] = ((BuckODEdiode) ode).getVd();
+			} else if(ode instanceof BuckODEdiode2) {
+				Id[count] = ((BuckODEdiode2) ode).getId();
+				Vd[count] = ((BuckODEdiode2) ode).getVd();
+			}
+						
 			NumberFormat f = NumberFormat.getInstance();
 			f.setMaximumFractionDigits(5);
 			logger.debug(marker, "t: {}, v: {}", f.format(t0), f.format(result.y));

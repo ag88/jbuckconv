@@ -81,6 +81,13 @@ public class ComputeCommMath extends Compute {
 			T[count] = t;
 			Vout[count] = y1[0];
 			dotVout[count] = ode.getYdot();
+			if(ode instanceof BuckODEdiode) {
+				Id[count] = ((BuckODEdiode) ode).getId();
+				Vd[count] = ((BuckODEdiode) ode).getVd();
+			} else if(ode instanceof BuckODEdiode2) {
+				Id[count] = ((BuckODEdiode2) ode).getId();
+				Vd[count] = ((BuckODEdiode2) ode).getVd();
+			}
 			
 			NumberFormat f = NumberFormat.getInstance();
 			f.setMaximumFractionDigits(5);

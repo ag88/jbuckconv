@@ -50,6 +50,8 @@ public class Compute {
 	public double T[];
 	public double Vout[];
 	public double dotVout[];	
+	public double Id[];
+	public double Vd[];
 	
 	public int N=1000;
 	public int count = 0;
@@ -76,6 +78,8 @@ public class Compute {
 		T = new double[MAXN];
 		Vout = new double[MAXN];
 		dotVout = new double[MAXN];
+		Id = new double[MAXN];
+		Vd = new double[MAXN];
 		t = 0.0;
 		t0 = 0.0;		
 	}
@@ -135,6 +139,29 @@ public class Compute {
         }
         dataset.addSeries(series1);
 
+		return dataset;
+	}
+	
+	private XYDataset getIdDataset() {
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		XYSeries series1 = new XYSeries("Id");                 
+
+		for(int i=0; i<count; i++) { 
+        	series1.add(T[i] , Id[i]);
+        }
+        dataset.addSeries(series1);
+		return dataset;
+	}
+	
+	private XYDataset getVdDataset() {
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		XYSeries series1 = new XYSeries("Vd");                 
+
+		Diode diode = new Diode();
+		for(int i=0; i<count; i++) { 
+        	series1.add(T[i] , Vd[i]);
+        }
+        dataset.addSeries(series1);
 		return dataset;
 	}
 	
@@ -226,6 +253,14 @@ public class Compute {
         final XYPlot subplot4 = createSubPlot(data4, "dVout/dt", Color.GRAY);
         plot.add(subplot4, 1);
 
+        final XYDataset data5 = getIdDataset();        
+        final XYPlot subplot5 = createSubPlot(data5, "Id", Color.GRAY);
+        plot.add(subplot5, 1);
+        
+        final XYDataset data6 = getVdDataset();        
+        final XYPlot subplot6 = createSubPlot(data6, "Vd", Color.GRAY);
+        plot.add(subplot6, 1);
+        
         plot.setOrientation(PlotOrientation.VERTICAL);
 
         // return a new chart containing the overlaid plot...

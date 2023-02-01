@@ -18,6 +18,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -41,6 +42,7 @@ import org.jbuckconv.model.BuckODEdiode2;
 import org.jbuckconv.model.Compute;
 import org.jbuckconv.model.ComputeCommMath;
 import org.jbuckconv.model.ComputeRKN;
+import org.jbuckconv.model.Vin;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtils;
@@ -61,6 +63,7 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 	ButtonGroup gPlot;
 	ButtonGroup gModel;
 	ButtonGroup gCompute;
+	JCheckBox cbSingle;
 
 	public MainFrame() {
 		super();
@@ -105,6 +108,9 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 		gModel.add(mrbDiode2);
 		mCompute.add(mrbDiode2);
 
+		mCompute.addSeparator();
+		cbSingle = new JCheckBox("Single pulse", false);
+		mCompute.add(cbSingle);
 		
 		mCompute.addSeparator();
 		gCompute = new ButtonGroup();
@@ -259,10 +265,14 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 		} else if(gCompute.getSelection().getActionCommand().equals("MCRKN")) {
 			compute = new ComputeRKN(ode);
 		}
+		
+		ode.getoVin().setSingle(cbSingle.isSelected());
+		
 		compute.setN(n);
 		if(proppanel.getStep() != 0.0)
 			compute.setStep(proppanel.getStep());		
 		compute.docompute();
+		ode.getoVin().setPulse(true);
 		if (gPlot.getSelection().getActionCommand().equals("COMB"))			
 			chart = compute.getCombinedChart();
 		else
@@ -344,7 +354,7 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 		final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         final Configuration config = ctx.getConfiguration();
         Map<String,LoggerConfig> loggers = config.getLoggers();		
-		LoggerConfig l = loggers.get(loggername);
+		LoggerConfig l = loggers.get(loggername);		
 		if (l != null) l.setLevel(level);
 		logger.info("{}: {}", loggername, l==null?null:l.getLevel());
 		ctx.updateLoggers();

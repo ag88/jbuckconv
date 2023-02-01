@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.jbuckconv.model.BuckODE.State;
 
 
 public class BuckODE implements SecondOrderDifferentialEquations {
@@ -48,6 +49,18 @@ public class BuckODE implements SecondOrderDifferentialEquations {
 		logger.debug(marker, "t : {}, y: {}, yDot: {}", t, y[0], yDot[0]);
 		double vin = oVin.getVin(t);
 
+		if(Math.abs(vin) < 1e-3 ) { // off state
+			if (m_state == State.High) {
+				m_state = State.Low;				
+				logger.debug(marker, "state: {}", m_state.name());
+			}
+		} else {
+			if (m_state == State.Low) {
+				m_state = State.High;				
+				logger.debug(marker, "state: {}", m_state.name());
+			}
+		}
+		
 		yDDot[0] = 1.0 / (L * C) * (vin - y[0] - L/R * yDot[0] );
 		
 		ydot = yDot[0];

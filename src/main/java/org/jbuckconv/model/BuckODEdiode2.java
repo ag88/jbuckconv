@@ -11,12 +11,17 @@ public class BuckODEdiode2 extends BuckODE {
 	
 	double Il;
 	
+	double Id;
+	double Vd;
+	
 	public BuckODEdiode2() {
 		super();
 		logger = LogManager.getLogger(BuckODEdiode2.class);
 		
 		diode = new Diode();
 		Il = 0;
+		Id = 0;
+		Vd = 0;
 	}
 
 	@Override
@@ -29,22 +34,29 @@ public class BuckODEdiode2 extends BuckODE {
 			if (m_state == State.High) {
 				//yDot[0] = -1.0 * yDot[0]; 
 				//yDot[0] = 0.0;
-				if (Math.abs(Il) > 1e-4) {
-					yDot[0] = (  Il - y[0] / R ) / C;
-					logger.debug(marker, "yDot: {}", yDot[0]);
-				}				
-				m_state = State.Low;
+				//if (Math.abs(Il) > 1e-4) {
+					//yDot[0] = (  Il - y[0] / R ) / C;					
+				//}
+				//y[0] = -y[0];
+				logger.debug(marker, "yDot: {}", yDot[0]);
+				m_state = State.Low;				
 				logger.debug(marker, "state: {}", m_state.name());
 			}
 			// without diode
 			//yDDot[0] = 1.0 / (L * C) * (- y[0] + L/R * yDot[0] );
 			// with diode
-			double id = C * yDot[0] + y[0] / R;
-			logger.debug(marker, "Id: {}", id);
+			Id =  - C * yDot[0] - y[0] / R;
+			Vd = 0.0;
+			try {
+				Vd = diode.Vd(Id);
+			} catch (DiodeCurrException e) {
+				Vd =  - y[0] - L/R * yDot[0];
+			}
+			logger.debug(marker, "Id: {}, Vd: {}", Id, Vd);
 			//if (id <= 0.0) {
 			//	yDDot[0] = 0.0;
 			//}  else
-				yDDot[0] = 1.0 / (L * C) * (y[0] + diode.Vd(id) - L/R * yDot[0]);
+				yDDot[0] = 1.0 / (L * C) * (- y[0] + Vd - L/R * yDot[0]);
 			// inverted v for L
 			//yDDot[0] = 1.0 / (L * C) * (y[0] - L/R * yDot[0] + diode.Vd( C * yDot[0] - y[0] / R));
 			// inverted without diode
@@ -56,6 +68,8 @@ public class BuckODEdiode2 extends BuckODE {
 				m_state = State.High;
 				logger.debug(marker, "state: {}", m_state.name());
 			}
+			Id = 0;
+			Vd = 0;
 			yDDot[0] = 1.0 / (L * C) * (  vin - y[0] - L/R * yDot[0] );
 			// using V_L = - L dI/dt
 			//yDDot[0] = 1.0 / (L * C) * (  y[0] - vin - L/R * yDot[0] );
@@ -72,5 +86,31 @@ public class BuckODEdiode2 extends BuckODE {
 		double il =  super.calcIL(dotVout, Vout);
 		return il < 0.0 ? 0.0 : il;
 	}
+
+	public double getIl() {
+		return Il;
+	}
+
+	public void setIl(double il) {
+		Il = il;
+	}
+
+	public double getId() {
+		return Id;
+	}
+
+	public void setId(double id) {
+		Id = id;
+	}
+
+	public double getVd() {
+		return Vd;
+	}
+
+	public void setVd(double vd) {
+		Vd = vd;
+	}
+	
+	
 
 }

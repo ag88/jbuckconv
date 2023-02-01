@@ -190,5 +190,4 @@ public class PropPanel extends JPanel implements ActionListener {
 		tfstep.setText(Double.toString(compute.getStep()));
 	}
 
-
 }
