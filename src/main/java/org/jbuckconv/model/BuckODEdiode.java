@@ -1,5 +1,6 @@
 package org.jbuckconv.model;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jbuckconv.model.BuckODE.State;
@@ -10,6 +11,7 @@ public class BuckODEdiode extends BuckODE {
 	
 	public BuckODEdiode() {
 		super();
+		logger = LogManager.getLogger(BuckODEdiode.class);
 		diode = new Diode();
 	}
 

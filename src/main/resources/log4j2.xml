@@ -27,6 +27,9 @@
     <Logger name="org.jbuckconv.model.BuckODE" level="info" additivity="false">
       <AppenderRef ref="Console1"/>
     </Logger>
+    <Logger name="org.jbuckconv.model.BuckODEdiode" level="info" additivity="false">
+      <AppenderRef ref="Console1"/>
+    </Logger>    
     <Logger name="org.jbuckconv.model.BuckODEdiode2" level="info" additivity="false">
       <AppenderRef ref="Console1"/>
     </Logger>

@@ -331,6 +331,7 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 			updatelogger("org.jbuckconv.model." + m.getText(), level);
 		} else if (m.getText().equals("BuckODE")) {
 			updatelogger("org.jbuckconv.model.BuckODE", level);
+			updatelogger("org.jbuckconv.model.BuckODEdiode", level);
 			updatelogger("org.jbuckconv.model.BuckODEdiode2", level);
 		}
 		
