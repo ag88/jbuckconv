@@ -60,12 +60,15 @@ public class Compute {
 	public double t, t0;
 		
 	public BuckODE ode;
+	
+	public Controller controller;
 
 	public Compute() {
 		init();
 		ode = new BuckODE();
 		//ode = new BuckODEdiode();
 		//ode = new BuckODEdiode2();
+		controller = null;
 	}
 	
 	public Compute(BuckODE ode) {
@@ -81,7 +84,8 @@ public class Compute {
 		Id = new double[MAXN];
 		Vd = new double[MAXN];
 		t = 0.0;
-		t0 = 0.0;		
+		t0 = 0.0;
+		controller = null;
 	}
 
 	public BuckODE getODE() {
@@ -306,6 +310,15 @@ public class Compute {
 			n = MAXN;
 		N = n;
 	}
+
+	public Controller getController() {
+		return controller;
+	}
+
+	public void setController(Controller controller) {
+		this.controller = controller;
+	}
+	
 	
 	
 }

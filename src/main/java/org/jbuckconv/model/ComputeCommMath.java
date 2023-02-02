@@ -92,6 +92,10 @@ public class ComputeCommMath extends Compute {
 			NumberFormat f = NumberFormat.getInstance();
 			f.setMaximumFractionDigits(5);
 			logger.debug(marker, "t: {}, v: {}", f.format(t0), f.format(y1[0]));
+			
+			if(controller != null)
+				controller.docontrol(ode.getoVin(), ode);
+			
 			t0 = t;
 			y0[0] = y1[0];
 			count++;			

@@ -95,6 +95,10 @@ public class ComputeRKN extends Compute {
 			NumberFormat f = NumberFormat.getInstance();
 			f.setMaximumFractionDigits(5);
 			logger.debug(marker, "t: {}, v: {}", f.format(t0), f.format(result.y));
+			
+			if(controller != null)
+				controller.docontrol(ode.getoVin(), ode);
+
 			t0 = t;
 			y0[0] = result.y;
 			yDot0[0] = result.ydot;

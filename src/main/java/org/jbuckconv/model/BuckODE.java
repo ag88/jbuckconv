@@ -21,6 +21,7 @@ public class BuckODE implements SecondOrderDifferentialEquations {
 	public double ydot;
 	
 	public Vin oVin;
+	protected VinConf vinconf = null;
 	
 	public enum State {
 		Low,
@@ -30,7 +31,8 @@ public class BuckODE implements SecondOrderDifferentialEquations {
 	public State m_state;
 			
 	public BuckODE() {
-		oVin = new Vin();
+		oVin = new VinDefault();
+		vinconf = (VinConf) oVin;
 		L = 100e-6;
 		C = 100e-6;
 		R = 1000;
@@ -75,27 +77,39 @@ public class BuckODE implements SecondOrderDifferentialEquations {
 	}
 	
 	public double getFreq() {
-		return oVin.getFreq();
+		if (oVin instanceof VinDefault)
+			return ((VinDefault) oVin).getFreq();
+		else
+			return 0.0;
 	}
 
 	public void setFreq(double freq) {
-		oVin.setFreq(freq);
+		if(vinconf != null)
+			vinconf.setFreq(freq);
 	}
 
 	public double getDuty_cycle() {
-		return oVin.getDuty_cycle();
+		if(vinconf != null)
+			return vinconf.getDuty_cycle();
+		else
+			return 0.0;
 	}
 
 	public void setDuty_cycle(double duty_cycle) {
-		oVin.setDuty_cycle(duty_cycle);
+		if(vinconf != null)
+			vinconf.setDuty_cycle(duty_cycle);
 	}
 
-	public double getVinc() {
-		return oVin.getVinc();
+	public double getVinLevel() {
+		if(vinconf != null)
+			return vinconf.getVinLevel();
+		else
+			return 0.0;
 	}
 
-	public void setVinc(double vinc) {
-		oVin.setVinc(vinc);
+	public void setVinLevel(double vinc) {
+		if(vinconf != null)
+			vinconf.setVinLevel(vinc);
 	}
 
 	public Vin getoVin() {
@@ -104,6 +118,8 @@ public class BuckODE implements SecondOrderDifferentialEquations {
 
 	public void setoVin(Vin oVin) {
 		this.oVin = oVin;
+		if (oVin instanceof VinConf)
+			vinconf = (VinConf) oVin;
 	}
 
 	public double getL() {

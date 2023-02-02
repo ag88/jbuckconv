@@ -118,7 +118,7 @@ public class PropPanel extends JPanel implements ActionListener {
 
 		tffreq.setValue(ode.getFreq());
 		tfdutycycle.setValue(ode.getDuty_cycle() * 100.0);
-		tfvin.setValue(ode.getVinc());
+		tfvin.setValue(ode.getVinLevel());
 		tfL.setValue(ode.getL() * 1e6);
 		tfC.setValue(ode.getC() * 1e6);
 		tfR.setValue(ode.getR());
@@ -145,7 +145,7 @@ public class PropPanel extends JPanel implements ActionListener {
 			efield = "duty cycle";
 			ode.setDuty_cycle(((Number)tfdutycycle.getValue()).doubleValue() / 100.0);
 			efield = "vin";
-			ode.setVinc(((Number)tfvin.getValue()).doubleValue());
+			ode.setVinLevel(((Number)tfvin.getValue()).doubleValue());
 			efield = "L";
 			ode.setL(((Number)tfL.getValue()).doubleValue() * 1e-6);
 			efield = "C";

@@ -43,6 +43,7 @@ import org.jbuckconv.model.Compute;
 import org.jbuckconv.model.ComputeCommMath;
 import org.jbuckconv.model.ComputeRKN;
 import org.jbuckconv.model.Vin;
+import org.jbuckconv.model.VinDefault;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtils;
@@ -266,13 +267,16 @@ public class MainFrame extends JFrame implements ActionListener, ItemListener {
 			compute = new ComputeRKN(ode);
 		}
 		
-		ode.getoVin().setSingle(cbSingle.isSelected());
+		Vin ovin = ode.getoVin();
+		if(ovin instanceof VinDefault)
+			((VinDefault) ovin).setSingle(cbSingle.isSelected());
 		
 		compute.setN(n);
 		if(proppanel.getStep() != 0.0)
 			compute.setStep(proppanel.getStep());		
 		compute.docompute();
-		ode.getoVin().setPulse(true);
+		if(ovin instanceof VinDefault)
+			((VinDefault) ovin).setPulse(true);
 		if (gPlot.getSelection().getActionCommand().equals("COMB"))			
 			chart = compute.getCombinedChart();
 		else
