@@ -120,6 +120,8 @@ public class BuckODE implements SecondOrderDifferentialEquations {
 		this.oVin = oVin;
 		if (oVin instanceof VinConf)
 			vinconf = (VinConf) oVin;
+		else
+			vinconf = null;
 	}
 
 	public double getL() {
