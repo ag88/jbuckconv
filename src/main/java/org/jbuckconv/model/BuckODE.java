@@ -77,8 +77,8 @@ public class BuckODE implements SecondOrderDifferentialEquations {
 	}
 	
 	public double getFreq() {
-		if (oVin instanceof VinDefault)
-			return ((VinDefault) oVin).getFreq();
+		if (vinconf != null)
+			return vinconf.getFreq();
 		else
 			return 0.0;
 	}
